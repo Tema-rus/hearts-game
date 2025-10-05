@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Наши воспоминания 💜</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: "Comic Sans MS", cursive;
+            background: linear-gradient(135deg, #ffe6f2, #e6ccff);
+            text-align: center;
+            color: #4a004a;
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .question {
+            font-weight: bold;
+            font-size: 2.2em;
+            margin-bottom: 1.8em;
+            line-height: 1.4;
+        }
+
+        .options button {
+            background-color: #fff;
+            border: 0.125em solid #cc66ff;
+            color: #660066;
+            font-size: 1.4em;
+            padding: 0.9em 2em;
+            margin: 0.25em;
+            border-radius: 0.625em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .options button:hover {
+            background-color: #f2ccff;
+            transform: scale(1.05);
+        }
+
+        .heart {
+            position: absolute;
+            animation: float 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-6em); opacity: 0; }
+        }
+
+        #feedback-message {
+            min-height: 1.5em;
+            font-weight: bold;
+            font-size: 1.5em; /* увеличиваем размер текста */
+            margin-bottom: 1em;
+            color: #660066; /* можно оставить тот же цвет, что и кнопки */
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="question-container">
+        <div class="question" id="question"></div>
+        <div id="feedback-message"></div>
+        <div class="options" id="options"></div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { question: "Где мы познакомились?", options: ["В Майнкрафте", "В чате знакомств", "В Дайвинчике"], correct: 0 },
+        { question: "На каком проекте мы с тобой познакомились?", options: ["StreamCraft", "Hypixel", "VimeWorld"], correct: 2 },
+        { question: "Когда мы с тобой обменялись номерами телефона, я не поверил, что это твой номер, что ты сделала?", options: ["Написала сообщение", "Позвонила", "Ничего"], correct: 0 },
+        { question: "Когда мы с тобой отмечали «Наш день»?", options: ["В день нашего знакомства", "В день, когда ты мне написала", "Когда вспомним"], correct: 1 },
+        { question: "В какой месяц мы с тобой отмечали «Наш день»?", options: ["Август", "Июль", "Сентябрь"], correct: 0 },
+        { question: "Когда я тебя впервые добавил в Skype, я уже сидел с кем-то. Кто это был?", options: ["Наташа", "Аня", "Тёма"], correct: 2 },
+        { question: "В какую мини-игру мы с тобой играли чаще всего?", options: ["SkyWars", "Дуэли", "Bedwars"], correct: 0 },
+        { question: "Что я ответил на твоё первое сообщение мне?", options: ["Правда?)", "Ты мне тоже)", "Ничего"], correct: 0 },
+        { question: "Какой наш любимый цвет?", options: ["Фиолетовый", "Зелёный", "Чёрный"], correct: 0 },
+        { question: "Как я тебя называл?", options: ["Солнышко", "Котя", "Зая"], correct: 2 },
+        { question: "Пару раз мы с тобой играли на сервере, который я запускал для нас с тобой, что я сделал?", options: ["Построил дом", "Построил сердце", "Подарил подарок"], correct: 1 }
+    ];
+
+    let currentQuestion = 0;
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const messageElement = document.getElementById("feedback-message");
+
+    function showQuestion() {
+        const q = questions[currentQuestion];
+        questionElement.textContent = q.question;
+        optionsElement.innerHTML = "";
+        messageElement.textContent = "";
+
+        q.options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.textContent = option;
+            button.onclick = () => checkAnswer(index);
+            optionsElement.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selectedOption) {
+        const q = questions[currentQuestion];
+
+        if (selectedOption === q.correct) {
+            showHearts();
+            messageElement.textContent = "Правильно! 🎉";
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                setTimeout(showQuestion, 1000);
+            } else {
+
+                questionElement.textContent = "💜 Спасибо, что вспомнила всё это со мной 💜";
+                optionsElement.innerHTML = "";
+            }
+        } else {
+            messageElement.textContent = "Упс! Попробуй ещё раз 😅";
+        }
+    }
+
+    function showHearts() {
+        const container = document.getElementById("question-container");
+        const numHearts = 25; // увеличили количество сердец
+        const containerCenterX = container.offsetLeft + container.offsetWidth / 2;
+        const containerTopY = container.offsetTop - 4 * parseFloat(getComputedStyle(document.body).fontSize);
+
+        for (let i = 0; i < numHearts; i++) {
+            const heart = document.createElement("div");
+            heart.innerHTML = "❤️";
+            heart.classList.add("heart");
+
+            // увеличиваем горизонтальный разброс ±100px
+            const offsetX = (Math.random() * 200) - 100;
+            const offsetY = (Math.random() * 60) - 30;
+            heart.style.left = containerCenterX + offsetX + "px";
+            heart.style.top = containerTopY + offsetY + "px";
+
+            heart.style.fontSize = (2 + Math.random() * 0.75) + "em";
+            heart.style.animationDuration = (1.5 + Math.random() * 1.5) + "s";
+
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }
+    }
+
+
+    showQuestion();
+</script>
+</body>
+</html>
